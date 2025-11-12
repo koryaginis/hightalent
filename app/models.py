@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, TIMESTAMP
 from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
 
 Base = declarative_base()
@@ -17,8 +17,10 @@ class Question(Base):
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        default=lambda: datetime.now(timezone.utc), 
-        nullable=False)
+        TIMESTAMP(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
 
 class Answer(Base):
     """Модель ответа"""

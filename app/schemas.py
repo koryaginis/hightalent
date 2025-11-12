@@ -3,12 +3,14 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 
-class QuestionSchema(BaseModel):
-    id: int = Field(description="Идентификатор вопроса")
+class QuestionBaseSchema(BaseModel):
     text: str = Field(description="Текст вопроса")
-    created_at: datetime = Field(description="Время создания вопроса")
 
     model_config = ConfigDict(from_attributes=True)
+
+class QuestionSchema(QuestionBaseSchema):
+    id: int = Field(description="Идентификатор вопроса")
+    created_at: datetime = Field(description="Время создания вопроса")
 
 class AnswerSchema(BaseModel):
     id: int = Field(description="Идентификатор ответа")
