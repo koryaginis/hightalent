@@ -4,24 +4,20 @@ services:
     container_name: hightalent_app
     ports:
       - "8001:80"
-    # environment:
-    #   - POSTGRES_PORT=${POSTGRES_PORT}
     volumes:
       - ./app:/code/app
     restart: always
     env_file:
       - .env
     depends_on:
-      - hightalent_db
+      - db
   
-  hightalent_db:
+  db:
     image: postgres:15
-    container_name: hightalent_db
+    container_name: db
     restart: always
     env_file:
       - .env
-    # environment:
-    #   - POSTGRES_PORT=${POSTGRES_PORT}
     ports:
       - "5432:5432"
     volumes:
