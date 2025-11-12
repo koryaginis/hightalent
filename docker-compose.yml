@@ -1,0 +1,32 @@
+services:
+  hightalent_app:
+    build: .
+    container_name: hightalent_app
+    ports:
+      - "8001:80"
+    # environment:
+    #   - POSTGRES_PORT=${POSTGRES_PORT}
+    volumes:
+      - ./app:/code/app
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      - hightalent_db
+  
+  hightalent_db:
+    image: postgres:15
+    container_name: hightalent_db
+    restart: always
+    env_file:
+      - .env
+    # environment:
+    #   - POSTGRES_PORT=${POSTGRES_PORT}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./app/db:/docker-entrypoint-initdb.d
+
+volumes:
+  db_data:
