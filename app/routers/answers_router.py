@@ -4,7 +4,8 @@ from app.deps import get_db
 from app.schemas import AnswerSchema, AnswerBaseSchema, QuestionSchema
 from app.actions.answers_actions import (
     create_answer,
-    get_answer_by_id
+    get_answer_by_id,
+    delete_answer
 )
 
 router = APIRouter(
@@ -32,3 +33,13 @@ async def get_answer_by_id_endpoint(
     Эндпоинт для получения ответа по id.
     """
     return await get_answer_by_id(answer_id=answer_id, db=db)
+
+@router.delete("/{answer_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_answer_endpoint(
+    answer_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Эндпоинт для удаления ответа по id.
+    """
+    return await delete_answer(answer_id=answer_id, db=db)

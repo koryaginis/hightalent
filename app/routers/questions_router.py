@@ -6,7 +6,8 @@ from app.deps import get_db
 from app.actions.questions_actions import (
     create_question,
     get_questions_list,
-    get_answers_by_question_id
+    get_answers_by_question_id,
+    delete_question
 )
 
 router = APIRouter(
@@ -43,51 +44,12 @@ async def get_answers_by_question_id_endpoint(
     """
     return await get_answers_by_question_id(question_id=question_id, db=db)
 
-# @router.get("/get-by-status/{status}", response_model=List[IncidentSchema], status_code=status.HTTP_200_OK)
-# async def get_incidents_by_status_endpoint(
-#     incident_status: StatusSchema,
-#     db: AsyncSession = Depends(get_db)
-# ):
-#     """
-#     Эндпоинт для получения инцидентов с указанным статусом.
-
-#         Статусы:
-#         - "OPENED": Создан
-#         - "IN_PROGRESS": В работе
-#         - "RESOLVED: Проблема устранена
-#         - "CLOSED": Закрыт
-
-#         Источники инцидента:
-#         - "OPERATOR": Сообщение от оператора
-#         - "MONITORING": Система мониторинга
-#         - "PARTNER": Партнер / сторонняя компания
-#         - "USER": Пользователь приложения
-#         - "MANUAL": Ручной ввод админом
-
-#     """
-#     return await get_incidents_by_status(incident_status=incident_status, db=db)
-
-# @router.put("/update/{incident_id}", response_model=IncidentSchema, status_code=status.HTTP_200_OK)
-# async def update_incident_endpoint(
-#     incident_id: PositiveInt,
-#     update_data: IncidentUpdateSchema,
-#     db: AsyncSession = Depends(get_db)
-# ):
-#     """
-#     Эндпоинт для обновления инцидента по id.
-
-#         Статусы:
-#         - "OPENED": Создан
-#         - "IN_PROGRESS": В работе
-#         - "RESOLVED: Проблема устранена
-#         - "CLOSED": Закрыт
-
-#         Источники инцидента:
-#         - "OPERATOR": Сообщение от оператора
-#         - "MONITORING": Система мониторинга
-#         - "PARTNER": Партнер / сторонняя компания
-#         - "USER": Пользователь приложения
-#         - "MANUAL": Ручной ввод админом
-        
-#     """
-#     return await update_incident(incident_id=incident_id, update_data=update_data, db=db)
+@router.delete("/{question_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_question_endpoint(
+    question_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Эндпоинт для удаления вопроса и ответов на него по id.
+    """
+    return await delete_question(question_id=question_id, db=db)

@@ -45,3 +45,22 @@ async def get_answer_by_id(answer_id: int, db: AsyncSession) -> AnswerSchema:
         )
 
     return AnswerSchema.model_validate(answer)
+
+async def delete_answer(answer_id: int, db: AsyncSession):
+    """
+    Удаляет ответ по id.
+    """
+    result = await db.execute(
+    select(Answer).where(Answer.id == answer_id))
+    answer = result.scalar_one_or_none()
+
+    if answer is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Answer with id {answer_id} not found."
+        )
+    
+    await db.delete(answer)
+    await db.commit()
+
+    return {"detail": f"Answer with id {answer_id} deleted successfully."}

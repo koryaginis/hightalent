@@ -55,3 +55,22 @@ async def get_answers_by_question_id(question_id: int, db: AsyncSession) -> Ques
         )
 
     return QuestionSchema.model_validate(question)
+
+async def delete_question(question_id: int, db: AsyncSession):
+    """
+    Удаляет вопрос и все ответы на него по id.
+    """
+    result = await db.execute(
+    select(Question).where(Question.id == question_id))
+    question = result.scalar_one_or_none()
+
+    if question is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Question with id {question_id} not found."
+        )
+    
+    await db.delete(question)
+    await db.commit()
+
+    return {"detail": f"Answer with id {question_id} deleted successfully."}
