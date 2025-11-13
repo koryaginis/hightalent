@@ -5,7 +5,8 @@ from app.schemas import QuestionSchema, QuestionBaseSchema
 from app.deps import get_db
 from app.actions.questions_actions import (
     create_question,
-    get_questions_list
+    get_questions_list,
+    get_answers_by_question_id
 )
 
 router = APIRouter(
@@ -31,6 +32,16 @@ async def get_questions_list_endpoint(
     Эндпоинт для получения всех вопросов.
     """
     return await get_questions_list(db=db)
+
+@router.get("/{question_id}", response_model=QuestionSchema, status_code=status.HTTP_200_OK)
+async def get_answers_by_question_id_endpoint(
+    question_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Эндпоинт для получения вопроса и всех ответов на него.
+    """
+    return await get_answers_by_question_id(question_id=question_id, db=db)
 
 # @router.get("/get-by-status/{status}", response_model=List[IncidentSchema], status_code=status.HTTP_200_OK)
 # async def get_incidents_by_status_endpoint(
