@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import List
 from app.schemas import QuestionSchema, QuestionBaseSchema
 from app.deps import get_db
 from app.actions.questions_actions import (
-    create_question
+    create_question,
+    get_questions_list
 )
 
 router = APIRouter(
@@ -20,6 +22,15 @@ async def create_question_endpoint(
     Эндпоинт для создания нового вопроса.
     """
     return await create_question(question_data=question_data, db=db)
+
+@router.get("/", response_model=List[QuestionSchema], status_code=status.HTTP_200_OK)
+async def get_questions_list_endpoint(
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Эндпоинт для получения всех вопросов.
+    """
+    return await get_questions_list(db=db)
 
 # @router.get("/get-by-status/{status}", response_model=List[IncidentSchema], status_code=status.HTTP_200_OK)
 # async def get_incidents_by_status_endpoint(
