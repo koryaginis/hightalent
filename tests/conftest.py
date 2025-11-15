@@ -1,22 +1,14 @@
-# tests/conftest.py
 import pytest
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-
 from app.main import app
 from app.models import Base
 from app.deps import get_db
 
-# ---- Любыеio backend для async тестов ----
-@pytest.fixture(scope="session")
-def anyio_backend():
-    return "asyncio"
-
-# ---- Тестовая БД ----
 @pytest.fixture
-async def test_db_session():
+async def get_test_db():
     """
-    Создаём in-memory SQLite для тестов.
+    Возвращает тестовую БД.
     """
     engine = create_async_engine(
         "sqlite+aiosqlite:///:memory:",
@@ -26,32 +18,30 @@ async def test_db_session():
 
     async_session = async_sessionmaker(engine, expire_on_commit=False)
 
-    # создаём все таблицы
+    # Создание таблиц
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    # создаём сессию для тестов
+    # Создание сессии для тестов
     async with async_session() as session:
         yield session
 
-    # удаляем таблицы после тестов
+    # Удаление таблиц после тестов
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
 
-# ---- Подмена зависимости get_db ----
 @pytest.fixture
-async def override_get_db(test_db_session: AsyncSession):
+async def override_get_db(get_test_db: AsyncSession):
     """
-    Подменяем get_db на тестовую сессию.
+    Подменяет зависимость get_db на get_test_db.
     """
     async def _override():
-        yield test_db_session
+        yield get_test_db
 
     app.dependency_overrides[get_db] = _override
     yield
     app.dependency_overrides.clear()
 
-# ---- Async клиент FastAPI ----
 @pytest.fixture
 async def test_client():
     """
