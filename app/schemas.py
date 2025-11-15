@@ -2,7 +2,7 @@ from __future__ import annotations
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 class QuestionBaseSchema(BaseModel):
     text: str = Field(description="Текст вопроса")
